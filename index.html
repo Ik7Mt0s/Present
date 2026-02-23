@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> <!-- viewport-fit=cover para iPhone -->
     <title>Feliz 2 anos!!! ❤️</title>
     
     <!-- Google Fonts -->
@@ -15,14 +15,19 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- Ícone do site -->
-    <link rel="icon" href="fotos/amor.jpeg" ,type="image/jpeg">
+    <link rel="icon" href="fotos/amor.jpeg" type="image/jpeg">
+    
+    <!-- Meta tags para iPhone (cor da barra de status) -->
+    <meta name="theme-color" content="#8A2BE2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
     <!-- Container dos corações flutuantes -->
     <div class="hearts-container" id="heartsContainer"></div>
 
     <!-- Controle de música -->
-    <div class="musica-controle">
+    <div class="musica-controle" id="musicControl"> <!-- Adicionado ID -->
         <div class="musica-info">
             <i class="fas fa-music"></i>
             <span>Unwritten - Natasha Bedingfield</span>
@@ -32,9 +37,12 @@
         </button>
     </div>
 
-    <!-- Áudio (oculto) -->
-    <audio id="backgroundMusic" loop preload="auto">
-        <source src="" type="audio/mpeg">
+    <!-- Áudio (oculto) - com configurações para iPhone -->
+    <audio id="backgroundMusic" loop preload="auto" playsinline webkit-playsinline>
+        <source src="audio/Unwritten.mp3" type="audio/mpeg">
+        <!-- Fallback para outros formatos se necessário -->
+        <source src="audio/Unwritten.webm" type="audio/webm">
+        Seu navegador não suporta áudio HTML5.
     </audio>
 
     <div class="container">
@@ -73,13 +81,13 @@
         <!-- Mensagem especial -->
         <div class="mensagem-container fade-in">
             <div class="mensagem-texto">
-                "Oiiiii meu amor, feliz  2 aninhos. Meu Deus, esse dois anos passaram voando hein amor. Mas eu amei passar todo esse tempo com você, e quero passar ainda mais tempo. Eu te amo demais, amo sua companhia, seu abraço, seu beijo, sei cheiro, seu tudo. Eu fiz esse site pra você usando todos os meu neurônios. Eu disse que era simples mas não era comum. Foi de coração viu? Eu te amo demais minha princesinha."
+                "Oiiiii meu amor, feliz 2 aninhos. Meu Deus, esse dois anos passaram voando hein amor. Mas eu amei passar todo esse tempo com você, e quero passar ainda mais tempo. Eu te amo demais, amo sua companhia, seu abraço, seu beijo, seu cheiro, seu tudo. Eu fiz esse site pra você usando todos os meus neurônios. Eu disse que era simples mas não era comum. Foi de coração viu? Eu te amo demais minha princesinha."
             </div>
         </div>
 
         <!-- Botão Spotify -->
         <div class="spotify-container fade-in">
-            <a href="#" class="botao-spotify" id="spotifyButton" target="_blank">
+            <a href="#" class="botao-spotify" id="spotifyButton" target="_blank" rel="noopener noreferrer">
                 <i class="fab fa-spotify"></i>
                 Nossa Playlist de 2 Anos
             </a>

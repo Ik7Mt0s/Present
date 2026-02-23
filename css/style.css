@@ -16,6 +16,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Remove o flash ao tocar no iPhone */
 }
 
 body {
@@ -25,6 +26,8 @@ body {
     color: var(--branco);
     position: relative;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased; /* Suaviza fontes no iPhone */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ===== CONTAINER PRINCIPAL ===== */
@@ -77,6 +80,7 @@ h3 {
 .contador-container {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: var(--blur-fundo);
+    -webkit-backdrop-filter: var(--blur-fundo); /* Suporte para Safari */
     border-radius: 20px;
     padding: 40px 20px;
     margin: 40px 0;
@@ -141,11 +145,17 @@ h3 {
     aspect-ratio: 1;
     cursor: pointer;
     transition: transform var(--transicao-padrao), box-shadow var(--transicao-padrao);
+    -webkit-tap-highlight-color: transparent; /* Remove flash ao tocar */
 }
 
 .foto-item:hover {
     transform: scale(1.05);
     box-shadow: var(--sombra-hover);
+}
+
+.foto-item:active {
+    transform: scale(0.98); /* Feedback de toque no iPhone */
+    transition: transform 0.1s ease;
 }
 
 .foto-item img {
@@ -160,6 +170,7 @@ h3 {
     height: 100%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: var(--blur-fundo);
+    -webkit-backdrop-filter: var(--blur-fundo);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -181,6 +192,7 @@ h3 {
 .mensagem-container {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: var(--blur-fundo);
+    -webkit-backdrop-filter: var(--blur-fundo);
     border-radius: 20px;
     padding: 40px;
     margin: 50px 0;
@@ -217,12 +229,17 @@ h3 {
     box-shadow: 0 5px 20px rgba(29, 185, 84, 0.4);
     border: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .botao-spotify:hover {
     background: var(--spotify-hover);
     transform: scale(1.05);
     box-shadow: 0 8px 25px rgba(29, 185, 84, 0.6);
+}
+
+.botao-spotify:active {
+    transform: scale(0.95); /* Feedback de toque */
 }
 
 .botao-spotify i {
@@ -237,12 +254,21 @@ h3 {
     z-index: 100;
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: var(--blur-fundo);
+    -webkit-backdrop-filter: var(--blur-fundo);
     border-radius: 50px;
     padding: 12px 20px;
     display: flex;
     align-items: center;
     gap: 15px;
     border: 1px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease;
+    min-height: 60px; /* Área de toque maior para iPhone */
+}
+
+.musica-controle:active {
+    transform: scale(0.97); /* Feedback ao tocar */
 }
 
 .musica-info {
@@ -251,6 +277,7 @@ h3 {
     gap: 10px;
     font-size: 0.9rem;
     max-width: 200px;
+    pointer-events: none; /* Garante que o clique vá para o controle */
 }
 
 .musica-info i {
@@ -270,17 +297,23 @@ h3 {
     color: var(--branco);
     font-size: 1.5rem;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 50px; /* Aumentado para iPhone */
+    height: 50px; /* Aumentado para iPhone */
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     transition: all var(--transicao-padrao);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .botao-musica:hover {
     background: rgba(255,255,255,0.2);
+}
+
+.botao-musica:active {
+    background: rgba(255,255,255,0.3);
+    transform: scale(0.9);
 }
 
 /* ===== CORAÇÕES FLUTUANTES ===== */
@@ -300,6 +333,7 @@ h3 {
     color: rgba(255, 105, 180, 0.6);
     bottom: -50px;
     animation: floatUp linear forwards;
+    will-change: transform, opacity; /* Otimização de performance */
 }
 
 @keyframes floatUp {
@@ -366,4 +400,52 @@ h3 {
     .galeria {
         grid-template-columns: 1fr;
     }
+    
+    .botao-spotify {
+        width: 90%; /* Botão mais largo no celular */
+        justify-content: center;
+    }
+    
+    .musica-controle {
+        bottom: 15px;
+        right: 15px;
+        left: 15px; /* Espalha na horizontal no iPhone */
+        width: auto;
+        justify-content: space-between;
+    }
+    
+    .musica-info {
+        max-width: 70%; /* Mais espaço no iPhone */
+    }
+}
+
+/* ===== OTIMIZAÇÕES PARA IPHONE ===== */
+@supports (-webkit-touch-callout: none) {
+    /* CSS específico para dispositivos iOS */
+    body {
+        /* Corrige problemas de altura no Safari mobile */
+        height: -webkit-fill-available;
+    }
+    
+    .musica-controle {
+        /* Garante que o botão seja visível no iPhone */
+        bottom: 20px;
+        padding: 15px 20px; /* Mais espaçamento interno */
+    }
+    
+    .botao-musica {
+        /* Área de toque maior no iPhone */
+        min-width: 55px;
+        min-height: 55px;
+    }
+}
+
+/* ===== PREVENIR SELEÇÃO DE TEXTO ===== */
+.musica-controle,
+.botao-spotify,
+.foto-item {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

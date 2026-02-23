@@ -26,7 +26,7 @@ const CONFIG = {
 
 // =============================================
 // MÓDULO: CONTADOR DE TEMPO
-// =============================================
+//==============================================
 const Contador = {
     elementos: {
         anos: document.getElementById('anos'),
@@ -73,11 +73,16 @@ const Contador = {
 // =============================================
 // MÓDULO: GALERIA DE FOTOS
 // =============================================
+// =============================================
+// MÓDULO: GALERIA DE FOTOS (VERSÃO CORRIGIDA)
+// =============================================
 const Galeria = {
     elemento: document.getElementById('galeria'),
 
     init() {
         this.criarEstrutura();
+        // CHAMAR O CARREGAMENTO DAS FOTOS IMEDIATAMENTE
+        this.carregarFotos();
     },
 
     criarEstrutura() {
@@ -88,13 +93,11 @@ const Galeria = {
             fotoDiv.className = 'foto-item fade-in';
             fotoDiv.setAttribute('data-index', i);
             
-            const imgPath = `fotos/photo${i}.jpg`;
-            
+            // Placeholder temporário
             fotoDiv.innerHTML = `
                 <div class="foto-placeholder">
                     <i class="fas fa-heart"></i>
-                    <span>Adicione sua foto aqui</span>
-                    <small>${imgPath}</small>
+                    <span>Carregando foto ${i}...</span>
                 </div>
             `;
             
@@ -102,61 +105,175 @@ const Galeria = {
         }
     },
 
-    // Método para carregar fotos reais (será chamado quando as fotos existirem)
+    // Método para carregar fotos reais
     carregarFotos() {
+        console.log("📸 Tentando carregar fotos...");
         const fotos = document.querySelectorAll('.foto-item');
+        
         fotos.forEach((foto, index) => {
+            const numeroFoto = index + 1;
             const img = new Image();
-            img.src = `fotos/photo${index + 1}.jpg`;
-            img.alt = `Foto ${index + 1} - Haylla Vitória`;
+            
+            // CAMINHO CORRETO DAS FOTOS
+            img.src = `fotos/photo${numeroFoto}.jpg`;
+            img.alt = `Foto ${numeroFoto} - ${CONFIG.NOME_NAMORADA}`;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            
             img.onload = () => {
+                console.log(`✅ Foto ${numeroFoto} carregada com sucesso!`);
+                // Substitui o placeholder pela imagem
                 foto.innerHTML = '';
                 foto.appendChild(img);
+            };
+            
+            img.onerror = () => {
+                console.log(`❌ Erro ao carregar foto ${numeroFoto}`);
+                // Mostra mensagem de erro no placeholder
+                foto.innerHTML = `
+                    <div class="foto-placeholder" style="background: rgba(255,0,0,0.2);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Erro ao carregar</span>
+                        <small>fotos/photo${numeroFoto}.jpg</small>
+                    </div>
+                `;
             };
         });
     }
 };
 
 // =============================================
-// MÓDULO: MÚSICA
+// MÓDULO: MÚSICA (VERSÃO ESPECIAL PARA IPHONE/ANDROID)
 // =============================================
 const Musica = {
     audio: document.getElementById('backgroundMusic'),
     toggleBtn: document.getElementById('toggleMusic'),
+    control: document.querySelector('.musica-controle'), // Pegando pelo seletor de classe
     icon: document.getElementById('musicIcon'),
     isPlaying: false,
+    audioReady: false,
+    userInteracted: false,
 
     init() {
+        // Verificar se os elementos existem
+        if (!this.audio || !this.toggleBtn) {
+            console.warn('⚠️ Elementos de música não encontrados');
+            return;
+        }
+
+        // Configurar áudio
         if (CONFIG.LINK_MUSICA) {
             this.audio.src = CONFIG.LINK_MUSICA;
         }
         
-        this.audio.volume = 0.5; // Volume 50%
-        this.toggleBtn.addEventListener('click', () => this.toggle());
+        // Configurações essenciais para iOS/iPhone
+        this.audio.volume = 0.5;
+        this.audio.preload = "auto";
+        this.audio.setAttribute('playsinline', '');
+        this.audio.setAttribute('webkit-playsinline', '');
         
-        // Tentar tocar quando usuário interagir com a página
-        document.body.addEventListener('click', () => this.tocarAutomatico(), { once: true });
-    },
+        // Pré-carregar
+        this.audio.load();
+        
+        // Verificar se o áudio está pronto
+        this.audio.addEventListener('canplaythrough', () => {
+            this.audioReady = true;
+            console.log('🎵 Áudio pronto para tocar');
+        });
 
-    toggle() {
-        if (this.isPlaying) {
-            this.audio.pause();
-            this.icon.className = 'fas fa-play';
-        } else {
-            this.audio.play().catch(e => {
-                console.log("Autoplay bloqueado:", e);
-                alert("Clique em qualquer lugar da página para ativar a música");
-            });
-            this.icon.className = 'fas fa-pause';
+        this.audio.addEventListener('error', (e) => {
+            console.error('❌ Erro no áudio:', e);
+        });
+        
+        // Adicionar evento de clique no botão
+        if (this.toggleBtn) {
+            this.toggleBtn.addEventListener('click', (e) => this.toggle(e));
         }
-        this.isPlaying = !this.isPlaying;
+        
+        // Adicionar evento de toque para iPhone (mais responsivo)
+        if (this.toggleBtn) {
+            this.toggleBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.toggle(e);
+            });
+        }
+        
+        // Se tiver o controle inteiro, adicionar evento também
+        if (this.control) {
+            this.control.addEventListener('click', (e) => {
+                // Não fazer nada se clicou no botão (já tratado)
+                if (e.target.closest('.botao-musica')) return;
+                this.toggle(e);
+            });
+        }
+        
+        // Detectar primeira interação do usuário com a página
+        document.body.addEventListener('touchstart', () => this.unlockAudio(), { once: true });
+        document.body.addEventListener('click', () => this.unlockAudio(), { once: true });
+        
+        console.log('🎵 Música inicializada - modo iPhone/Android');
     },
 
-    tocarAutomatico() {
-        if (!this.isPlaying && this.audio.paused) {
-            this.audio.play().catch(e => console.log("Erro ao tocar música:", e));
-            this.icon.className = 'fas fa-pause';
-            this.isPlaying = true;
+    unlockAudio() {
+        if (this.userInteracted || !this.audio) return;
+        
+        console.log('👆 Usuário interagiu - desbloqueando áudio');
+        this.userInteracted = true;
+        
+        // Tocar e pausar rapidamente para "desbloquear" o áudio
+        this.audio.play()
+            .then(() => {
+                this.audio.pause();
+                this.audio.currentTime = 0;
+                console.log('🔓 Áudio desbloqueado!');
+            })
+            .catch(e => console.log('Aguardando interação direta com o botão'));
+    },
+
+    toggle(event) {
+        // IMPORTANTE: Prevenir comportamento padrão
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        if (!this.audioReady) {
+            alert('🎵 Áudio ainda está carregando... tente novamente');
+            return;
+        }
+        
+        if (this.isPlaying) {
+            // PAUSAR
+            this.audio.pause();
+            if (this.icon) this.icon.className = 'fas fa-play';
+            this.isPlaying = false;
+            console.log('⏸️ Música pausada');
+        } else {
+            // TOCAR - com tratamento especial para iPhone
+            const playPromise = this.audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Sucesso!
+                    if (this.icon) this.icon.className = 'fas fa-pause';
+                    this.isPlaying = true;
+                    console.log('✅ Música tocando!');
+                }).catch(error => {
+                    // Erro!
+                    console.error('❌ Erro ao tocar:', error);
+                    
+                    // Mensagem específica para iPhone
+                    if (error.name === 'NotAllowedError') {
+                        alert('No iPhone, toque NOVAMENTE no botão (a primeira vez só prepara o áudio)');
+                    } else if (error.name === 'NotSupportedError') {
+                        alert('Formato de áudio não suportado. Use MP3.');
+                    }
+                    
+                    // Resetar o ícone
+                    if (this.icon) this.icon.className = 'fas fa-play';
+                });
+            }
         }
     }
 };
@@ -169,6 +286,7 @@ const Coracoes = {
     interval: null,
 
     init() {
+        if (!this.container) return;
         this.interval = setInterval(() => this.criar(), 300);
     },
 
@@ -213,6 +331,9 @@ const ScrollAnimations = {
                     setTimeout(() => {
                         entry.target.classList.add('visible');
                     }, index * 100);
+                    
+                    // Parar de observar após ativar
+                    this.observer.unobserve(entry.target);
                 }
             });
         }, {
@@ -234,7 +355,9 @@ const Spotify = {
     botao: document.getElementById('spotifyButton'),
 
     init() {
-        this.botao.href = CONFIG.LINK_SPOTIFY;
+        if (this.botao && CONFIG.LINK_SPOTIFY) {
+            this.botao.href = CONFIG.LINK_SPOTIFY;
+        }
     }
 };
 
@@ -252,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ScrollAnimations.init();
     Spotify.init();
     
-    // Opcional: tentar carregar fotos reais após 1 segundo
+    // Tentar carregar fotos reais após 1 segundo
     setTimeout(() => {
         Galeria.carregarFotos();
     }, 1000);
