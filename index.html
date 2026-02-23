@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> <!-- viewport-fit=cover para iPhone -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feliz 2 anos!!! ❤️</title>
     
     <!-- Google Fonts -->
@@ -15,19 +15,14 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- Ícone do site -->
-    <link rel="icon" href="fotos/amor.jpeg" type="image/jpeg">
-    
-    <!-- Meta tags para iPhone (cor da barra de status) -->
-    <meta name="theme-color" content="#8A2BE2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="fotos/amor.jpeg" ,type="image/jpeg">
 </head>
 <body>
     <!-- Container dos corações flutuantes -->
     <div class="hearts-container" id="heartsContainer"></div>
 
     <!-- Controle de música -->
-    <div class="musica-controle" id="musicControl"> <!-- Adicionado ID -->
+    <div class="musica-controle">
         <div class="musica-info">
             <i class="fas fa-music"></i>
             <span>Unwritten - Natasha Bedingfield</span>
@@ -37,12 +32,9 @@
         </button>
     </div>
 
-    <!-- Áudio (oculto) - com configurações para iPhone -->
-    <audio id="backgroundMusic" loop preload="auto" playsinline webkit-playsinline>
-        <source src="audio/Unwritten.mp3" type="audio/mpeg">
-        <!-- Fallback para outros formatos se necessário -->
-        <source src="audio/Unwritten.webm" type="audio/webm">
-        Seu navegador não suporta áudio HTML5.
+    <!-- Áudio (oculto) -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="" type="audio/mpeg">
     </audio>
 
     <div class="container">
@@ -87,7 +79,7 @@
 
         <!-- Botão Spotify -->
         <div class="spotify-container fade-in">
-            <a href="#" class="botao-spotify" id="spotifyButton" target="_blank" rel="noopener noreferrer">
+            <a href="#" class="botao-spotify" id="spotifyButton" target="_blank">
                 <i class="fab fa-spotify"></i>
                 Nossa Playlist de 2 Anos
             </a>
